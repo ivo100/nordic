@@ -9,6 +9,7 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/printk.h>
+#include <zephyr/logging/log.h>
 
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
@@ -30,11 +31,13 @@ static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 /* STEP 3.2 - Get the device pointer. pin number, and pin's configuration flags through gpio_dt_spec */
 static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(SW0_NODE, gpios);
 
+LOG_MODULE_REGISTER(blinky,LOG_LEVEL_DBG);
+
 /* STEP 4 - Define the callback function */
 void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
 	led_value = 1 - led_value;
-	printk("BUTTON CLICK led value: %d\n", led_value);
+	printk("BUTTON CLICK set led : %d\n", led_value);
 	int ret = gpio_pin_set_dt(&led, led_value);
 	if (ret < 0) {
 		printk("*** ERROR from pin_st\n");
@@ -49,7 +52,21 @@ static struct gpio_callback button_cb_data;
 void main(void)
 {
 	int ret;
-	printk("BUTTON BLINKY SAMPLE STARTS...\n");
+	printk("BUTTON BLINKY SAMPLE v.1.0 STARTING...\n");
+
+	int exercise_num=2;
+    uint8_t data[] = {0x00, 0x01, 0x02, 0x03,
+                      0x04, 0x05, 0x06, 0x07,
+                      'H', 'e', 'l', 'l','o'};
+    //Printf-like messages
+    LOG_INF("nRF Connect SDK Fundamentals");
+    LOG_INF("Exercise %d",exercise_num);    
+    LOG_DBG("A log message in debug level");
+    LOG_WRN("A log message in warning level!");
+    LOG_ERR("A log message in Error level!");
+    //Hexdump some data
+    LOG_HEXDUMP_INF(data, sizeof(data),"Sample Data!");
+
 	if (!device_is_ready(led.port)) {
 		printk("*** ERROR 1\n");
 		return;
