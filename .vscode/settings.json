@@ -1,0 +1,7 @@
+{
+    "nrf-connect.applications": [
+        "${workspaceFolder}/blinky"
+        "${workspaceFolder}/threads"
+        "${workspaceFolder}/uart"
+    ]
+}
