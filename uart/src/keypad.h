@@ -5,11 +5,12 @@
 #include <zephyr/drivers/uart.h>
 #include <zephyr/kernel.h>
 
-#define RECEIVE_BUF_SIZE 16
-#define RECEIVE_TIMEOUT 100
+#define RECEIVE_BUF_SIZE 128
+#define RECEIVE_TIMEOUT 50
 #define SEND_BUF_SIZE 64
 
 struct my_keypad {
+    // struct k_msgq *queue;
     struct device *uart;
     int id;
     int value;

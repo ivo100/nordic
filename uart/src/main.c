@@ -1,45 +1,44 @@
 #include "keypad.h"
 #include "led.h"
 
-/* Every thread needs its own stack in RAM */
-#define THREAD_STACK_SIZE 1024
+// just for fun - using message queue to pass button presses 1-3
+// from UART to led 1-3
+// led 0 is used by a heartbeat thread in led
 
-led L[4] = {};
+#define QUEUE_SIZE 16
+#define DATA_LEN 1
+#define DATA_ALIGN 1
+K_MSGQ_DEFINE(queue, DATA_LEN, QUEUE_SIZE, DATA_ALIGN);
 
-/* All animations handled by this thread */
-void blinking_thread(void *d0, void *d1, void *d2) {
-    int value = 1;
-    while (1) {
-        led_toggle(&leds[3]);
-        k_msleep(100);
-        value = 1 - value;
-        //printk("blink loop %d\n", value);
-    }
-}
-
+// main thread
 int main(void) {
     keypad keypad;
-    printk("main starts\n");
+    printk("main 1.0.4 starts\n");
+
+    if (led_init()) {
+        printk("led_init failed");
+        return 1;
+    }
+
     if (keypad_init(&keypad)) {
         printk("keypad_init failed");
         return 1;
     }
-    for (int i=0; i<4; i++) {
-        leds[i].id = i;
-        leds[i].value = 0;
-        if (led_init(&leds[i])) {
-            printk("led_init %d failed\n", i);
-            return 1;
-        }
-    }
-    k_thread_start(blinking_thread);
+
+    // main loop
     while (1) {
-        k_msleep(1000);
-        //printk("main loop\n");
+        k_yield();
+        //  Read all key presses
+        while (k_msgq_num_used_get(&queue)) {
+            uint8_t idx;
+            k_msgq_get(&queue, &idx, K_NO_WAIT);
+            idx = idx - 48;
+            // we handle only 1,2,3
+            if (idx > 0 && idx < 4) {
+                led_toggle(idx);
+            }
+            k_yield();
+        }
+        k_msleep(20);
     }
 }
-
-/* Define and initialize the new thread */
-K_THREAD_DEFINE(blinking_thread_tid, THREAD_STACK_SIZE,
-                blinking_thread, NULL, NULL, NULL,
-                K_LOWEST_APPLICATION_THREAD_PRIO, 0, 0);
