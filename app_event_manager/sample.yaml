@@ -1,0 +1,25 @@
+sample:
+  description: Sample showing Application Event Manager usage
+  name: Application Event Manager sample
+common:
+  harness: console
+  harness_config:
+    ordered: false
+    regex:
+      - "config_event"
+      - "measurement_event"
+      - "control_event"
+      - "ack_event"
+      - "Average value3: 45"
+    type: multi_line
+tests:
+  sample.app_event_manager:
+    build_only: false
+    integration_platforms:
+      - nrf52840dk_nrf52840
+  sample.app_event_manager_shell:
+    build_only: false
+    integration_platforms:
+      - nrf52840dk_nrf52840
+    extra_configs:
+      - CONFIG_SHELL=y

@@ -1,6 +1,6 @@
 
 // #include <zephyr/sys/util.h>
-#include <zephyr/kernel.h>
+// #include <zephyr/kernel.h>
 
 //    40  		/* STEP 9 - Submit the work item to the workqueue instead of calling emulate_work() directly */
 //    41  		/* Remember to comment out emulate_work(); */

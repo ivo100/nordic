@@ -2,13 +2,14 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/printk.h>
 
-#define STACKSIZE 1024
+#include "../ui/pixels.h"
+
+#define STACKSIZE 2048
 
 /* scheduling priority used by each thread */
 #define PRIORITY 7
 
-/* delay between greetings (in ms) */
-#define SLEEPTIME 5000
+#define SLEEP 1000
 
 K_THREAD_STACK_DEFINE(threadA_stack_area, STACKSIZE);
 static struct k_thread threadA_data;
@@ -28,16 +29,28 @@ void threadA(void *dummy1, void *dummy2, void *dummy3) {
 
     printk("thread_a: thread started \n");
 
-    while (1) {
-        // printk("thread_a: thread loop \n");
-        k_msleep(SLEEPTIME);
-    }
+    // int cursor = 0;
+    // int color = 0;
+    // pixels_clear();
+    // while (1) {
+    //     if (++cursor >= 8) {
+    //         cursor = 0;
+    //         pixels_clear();
+    //     }
+    //     if (++color >= 200) {
+    //         color = 0;
+    //     }
+    //     k_msleep(SLEEP);
+    //     pixels_set_one(cursor, 0, color, color);
+    //     pixels_show();
+    // }
 }
 
 void my_expiry_function(struct k_timer *timer_id) {
     uint64_t start = start_time;
     int64_t delta = k_uptime_delta(&start);
-    //printk(">>>>> timer expired, elapsed time since start: %lld\n", delta);
+    // pixels_set_all(1, 2, 3);
+    //  printk(">>>>> timer expired, elapsed time since start: %lld\n", delta);
 }
 
 void run_timer(void) {

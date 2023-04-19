@@ -1,5 +1,6 @@
-#include "keypad.h"
-#include "led.h"
+#include "ui/buttons.h"
+#include "ui/keypad.h"
+#include "ui/led.h"
 
 // just for fun - using message queue to pass button presses 1-3
 // from UART to led 1-3
@@ -10,7 +11,7 @@
 #define DATA_ALIGN 1
 
 extern void run_timer(void);
-
+// our message queue
 K_MSGQ_DEFINE(queue, DATA_LEN, QUEUE_SIZE, DATA_ALIGN);
 
 keypad keyp;
@@ -21,12 +22,12 @@ int init();
 
 // main thread
 int main(void) {
-    printk("main 1.4.18 starts\n");
+    printk("main 1.4.19a starts\n");
     if (init()) {
         printk("init failed\n");
         return 1;
     }
-    // run_timer();
+    run_timer();
     //  main loop
     while (1) {
         k_yield();
@@ -35,6 +36,11 @@ int main(void) {
 }
 
 int init() {
+    // if (buttons_init(NULL)) {
+    //     printk("keypad_init failed");
+    //     return 1;
+    // }
+
     if (keypad_init(&keyp)) {
         printk("keypad_init failed");
         return 1;
